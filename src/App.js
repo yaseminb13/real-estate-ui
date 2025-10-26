@@ -1,24 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import DashboardLayout from "./layouts/DashboardLayout";
+import BusinessPage from "./pages/BusinessPage";
+import CustomerPage from "./pages/CustomerPage";
+import PropertyPage from "./pages/PropertyPage";
+import SearchPage from "./pages/SearchPage";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        {/* Tüm sayfalar DashboardLayout içinde render olacak */}
+        <Route path="/" element={<DashboardLayout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="business" element={<BusinessPage />} />
+          <Route path="customers" element={<CustomerPage />} />
+          <Route path="properties" element={<PropertyPage />} />
+          <Route path="search" element={<SearchPage />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 
