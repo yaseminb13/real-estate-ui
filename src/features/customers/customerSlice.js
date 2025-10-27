@@ -14,12 +14,12 @@ export const fetchCustomers = createAsyncThunk(
   }
 );
 
-// MÜŞTERİ OLUŞTUR
+// YENİ MÜŞTERİ OLUŞTUR
 export const createCustomer = createAsyncThunk(
   "customers/create",
-  async (payload, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
     try {
-      const res = await config.post("/customers", payload);
+      const res = await config.post("/customers", data);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -63,9 +63,9 @@ const customerSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // FETCH
       .addCase(fetchCustomers.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(fetchCustomers.fulfilled, (state, action) => {
         state.loading = false;
@@ -75,15 +75,18 @@ const customerSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // CREATE
       .addCase(createCustomer.fulfilled, (state, action) => {
         state.items.push(action.payload);
       })
+      // UPDATE
       .addCase(updateCustomer.fulfilled, (state, action) => {
-        const idx = state.items.findIndex((i) => i.id === action.payload.id);
+        const idx = state.items.findIndex(c => c.id === action.payload.id);
         if (idx !== -1) state.items[idx] = action.payload;
       })
+      // DELETE
       .addCase(deleteCustomer.fulfilled, (state, action) => {
-        state.items = state.items.filter((i) => i.id !== action.payload);
+        state.items = state.items.filter(c => c.id !== action.payload);
       });
   },
 });

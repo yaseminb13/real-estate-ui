@@ -3,7 +3,7 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import BusinessPage from "./pages/BusinessPage";
 import CustomerPage from "./pages/CustomerPage";
 import PropertyPage from "./pages/PropertyPage";
-import SearchPage from "./pages/SearchPage";
+import PropertySearch from "./pages/PropertySearch";
 import Dashboard from "./pages/Dashboard";
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
           <Route path="business" element={<BusinessPage />} />
           <Route path="customers" element={<CustomerPage />} />
           <Route path="properties" element={<PropertyPage />} />
-          <Route path="search" element={<SearchPage />} />
+          <Route path="search" element={<PropertySearch />} />
         </Route>
       </Routes>
     </Router>

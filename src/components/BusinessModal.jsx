@@ -6,7 +6,7 @@ import {
   Button,
   Typography,
 } from "@mui/material";
-import InputMask from "react-input-mask";
+// import InputMask from "react-input-mask";
 
 const modalStyle = {
   position: "absolute",
@@ -90,7 +90,14 @@ const BusinessModal = ({ open, onClose, onSave, editData }) => {
           fullWidth
           margin="normal"
         />
- <InputMask
+           <TextField
+      fullWidth
+      label="Telefon"
+      name="phone"
+      variant="outlined"
+      margin="normal"
+    />
+ {/* <InputMask
   mask="+90 (999) 999 99 99"
   value={form.phone || ""}
   onChange={handleChange}
@@ -104,8 +111,8 @@ const BusinessModal = ({ open, onClose, onSave, editData }) => {
       margin="normal"
     />
   )}
-</InputMask>
-<InputMask
+</InputMask> */}
+{/* <InputMask
   mask="+90 (999) 999 99 99"
   value={form.fax || ""}
   onChange={handleChange}
@@ -119,7 +126,14 @@ const BusinessModal = ({ open, onClose, onSave, editData }) => {
       margin="normal"
     />
   )}
-</InputMask>
+</InputMask> */}
+    <TextField
+      fullWidth
+      label="Fax"
+      name="fax"
+      variant="outlined"
+      margin="normal"
+    />
 
         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
           <Button onClick={onClose} color="inherit" sx={{ mr: 1 }}>
