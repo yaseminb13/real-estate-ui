@@ -1,5 +1,4 @@
-// ...existing code...
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -185,4 +184,3 @@ export default function CustomerPage() {
     </Box>
   );
 }
-// ...existing code...

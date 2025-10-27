@@ -1,12 +1,5 @@
-import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  Box,
-  TextField,
-  Button,
-  Typography,
-} from "@mui/material";
-// import InputMask from "react-input-mask";
+import { useState, useEffect } from "react";
+import { Modal, Box, TextField, Button, Typography } from "@mui/material";
 
 const modalStyle = {
   position: "absolute",
@@ -29,12 +22,10 @@ const BusinessModal = ({ open, onClose, onSave, editData }) => {
     fax: "",
   });
 
-  // Eğer editData varsa formu doldur
   useEffect(() => {
     if (editData) {
       setForm(editData);
     } else {
-      // Yeni kayıt ekleme moduna geçtiyse formu sıfırla
       setForm({
         name: "",
         authorizedPerson: "",
@@ -55,7 +46,14 @@ const BusinessModal = ({ open, onClose, onSave, editData }) => {
       alert("İşyeri adı zorunludur!");
       return;
     }
-    onSave(form);
+
+    const formattedForm = {
+      ...form,
+      phone: form.phone.replace(/\D/g, ""), // +90 (555) 123 45 67 => 905551234567
+      fax: form.fax.replace(/\D/g, ""),
+    };
+
+    onSave(formattedForm);
     onClose();
   };
 
@@ -90,50 +88,33 @@ const BusinessModal = ({ open, onClose, onSave, editData }) => {
           fullWidth
           margin="normal"
         />
-           <TextField
-      fullWidth
-      label="Telefon"
-      name="phone"
-      variant="outlined"
-      margin="normal"
-    />
- {/* <InputMask
-  mask="+90 (999) 999 99 99"
-  value={form.phone || ""}
-  onChange={handleChange}
->
-  {() => (
-    <TextField
-      fullWidth
-      label="Telefon"
-      name="phone"
-      variant="outlined"
-      margin="normal"
-    />
-  )}
-</InputMask> */}
-{/* <InputMask
-  mask="+90 (999) 999 99 99"
-  value={form.fax || ""}
-  onChange={handleChange}
->
-  {() => (
-    <TextField
-      fullWidth
-      label="Fax"
-      name="fax"
-      variant="outlined"
-      margin="normal"
-    />
-  )}
-</InputMask> */}
-    <TextField
-      fullWidth
-      label="Fax"
-      name="fax"
-      variant="outlined"
-      margin="normal"
-    />
+
+        {/* Telefon ve Fax maskeli input */}
+        <TextField
+          label="Telefon"
+          name="phone"
+          value={form.phone}
+          onChange={(e) => {
+            const val = e.target.value.replace(/[^\d]/g, "");
+            setForm((prev) => ({ ...prev, phone: val }));
+          }}
+          placeholder="05551234567"
+          fullWidth
+          margin="normal"
+        />
+
+        <TextField
+          label="Fax"
+          name="fax"
+          value={form.fax}
+          onChange={(e) => {
+            const val = e.target.value.replace(/[^\d]/g, "");
+            setForm((prev) => ({ ...prev, fax: val }));
+          }}
+          placeholder="05551234567"
+          fullWidth
+          margin="normal"
+        />
 
         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
           <Button onClick={onClose} color="inherit" sx={{ mr: 1 }}>

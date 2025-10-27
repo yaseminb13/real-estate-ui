@@ -31,7 +31,6 @@ import {
 } from "../features/businesses/businessSlice";
 import { toast } from "react-toastify";
 
-
 const BusinessPage = () => {
   const dispatch = useDispatch();
   const { items: rows, loading } = useSelector((state) => state.businesses);
@@ -54,43 +53,42 @@ const BusinessPage = () => {
     return rows.filter((r) => (r.name || "").toLowerCase().includes(q));
   }, [rows, filter]);
 
-const handleSaveBusiness = async (data) => {
-  try {
-    if (editData) {
-      await dispatch(updateBusiness({ id: editData.id, data })).unwrap();
-      toast.success("İşyeri başarıyla güncellendi!");
-    } else {
-      await dispatch(createBusiness(data)).unwrap();
-      toast.success("Yeni işyeri başarıyla eklendi!");
+  const handleSaveBusiness = async (data) => {
+    try {
+      if (editData) {
+        await dispatch(updateBusiness({ id: editData.id, data })).unwrap();
+        toast.success("İşyeri başarıyla güncellendi!");
+      } else {
+        await dispatch(createBusiness(data)).unwrap();
+        toast.success("Yeni işyeri başarıyla eklendi!");
+      }
+      setOpen(false);
+      setEditData(null);
+    } catch (err) {
+      console.error("Kayıt işlemi hatası:", err);
+      toast.error("Kayıt işlemi sırasında bir hata oluştu!");
     }
-    setOpen(false);
-    setEditData(null);
-  } catch (err) {
-    console.error("Kayıt işlemi hatası:", err);
-    toast.error("Kayıt işlemi sırasında bir hata oluştu!");
-  }
-};
-
+  };
 
   const handleDelete = (row) => {
     setSelectedToDelete(row);
     setConfirmOpen(true);
   };
-const confirmDelete = async () => {
-  if (!selectedToDelete) return;
-  try {
-    await dispatch(deleteBusiness(selectedToDelete.id)).unwrap();
-    toast.success("İşyeri başarıyla silindi!");
-  } catch (err) {
-    console.error("Silme hatası:", err);
-    toast.error(
-      "Silme işlemi başarısız! Bu işyerine bağlı müşteriler olabilir."
-    );
-  } finally {
-    setConfirmOpen(false);
-    setSelectedToDelete(null);
-  }
-};
+  const confirmDelete = async () => {
+    if (!selectedToDelete) return;
+    try {
+      await dispatch(deleteBusiness(selectedToDelete.id)).unwrap();
+      toast.success("İşyeri başarıyla silindi!");
+    } catch (err) {
+      console.error("Silme hatası:", err);
+      toast.error(
+        "Silme işlemi başarısız! Bu işyerine bağlı müşteriler olabilir."
+      );
+    } finally {
+      setConfirmOpen(false);
+      setSelectedToDelete(null);
+    }
+  };
 
   const cancelDelete = () => {
     setConfirmOpen(false);

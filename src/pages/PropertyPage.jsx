@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -20,20 +20,23 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProperties, deleteProperty } from "../features/properties/propertySlice";
+import {
+  fetchProperties,
+  deleteProperty,
+} from "../features/properties/propertySlice";
 import PropertyModal from "../components/PropertyModal";
 
 export default function PropertyPage() {
   const dispatch = useDispatch();
-  const { items: properties, loading } = useSelector((state) => state.properties);
+  const { items: properties, loading } = useSelector(
+    (state) => state.properties
+  );
 
   const [search, setSearch] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [editData, setEditData] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuProperty, setMenuProperty] = useState(null);
-
-  // Pagination state
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -46,9 +49,15 @@ export default function PropertyPage() {
     const q = search.toLowerCase();
     return properties.filter(
       (p) =>
-        String(p.title || "").toLowerCase().includes(q) ||
-        String(p.city || "").toLowerCase().includes(q) ||
-        String(p.district || "").toLowerCase().includes(q)
+        String(p.title || "")
+          .toLowerCase()
+          .includes(q) ||
+        String(p.city || "")
+          .toLowerCase()
+          .includes(q) ||
+        String(p.district || "")
+          .toLowerCase()
+          .includes(q)
     );
   }, [properties, search]);
 
@@ -88,7 +97,6 @@ export default function PropertyPage() {
     setMenuProperty(null);
   };
 
-  // Pagination handlers
   const handleChangePage = (event, newPage) => setPage(newPage);
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
@@ -97,10 +105,15 @@ export default function PropertyPage() {
 
   return (
     <Box p={3}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-     <Typography variant="h5">
-  İlan Listesi ({filteredProperties.length})
-</Typography>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
+        <Typography variant="h5">
+          İlan Listesi ({filteredProperties.length})
+        </Typography>
         <Stack direction="row" spacing={1}>
           <TextField
             size="small"
@@ -118,14 +131,30 @@ export default function PropertyPage() {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell><strong>ID</strong></TableCell>
-              <TableCell><strong>Başlık</strong></TableCell>
-              <TableCell><strong>Şehir</strong></TableCell>
-              <TableCell><strong>İlçe</strong></TableCell>
-              <TableCell><strong>Alan (m²)</strong></TableCell>
-              <TableCell><strong>Fiyat (₺)</strong></TableCell>
-              <TableCell><strong>Tür</strong></TableCell>
-              <TableCell align="right"><strong>İşlemler</strong></TableCell>
+              <TableCell>
+                <strong>ID</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Başlık</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Şehir</strong>
+              </TableCell>
+              <TableCell>
+                <strong>İlçe</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Alan (m²)</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Fiyat (₺)</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Tür</strong>
+              </TableCell>
+              <TableCell align="right">
+                <strong>İşlemler</strong>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -139,7 +168,10 @@ export default function PropertyPage() {
                 <TableCell>{p.price}</TableCell>
                 <TableCell>{p.type}</TableCell>
                 <TableCell align="right">
-                  <IconButton size="small" onClick={(e) => handleOpenMenu(e, p)}>
+                  <IconButton
+                    size="small"
+                    onClick={(e) => handleOpenMenu(e, p)}
+                  >
                     <MoreVertIcon />
                   </IconButton>
                 </TableCell>
@@ -155,7 +187,6 @@ export default function PropertyPage() {
           </TableBody>
         </Table>
 
-        {/* Pagination */}
         <TablePagination
           component="div"
           count={filteredProperties.length}
@@ -167,9 +198,17 @@ export default function PropertyPage() {
         />
       </Paper>
 
-      {/* Menü */}
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
-        <MenuItem onClick={() => { openEditModal(menuProperty); handleCloseMenu(); }}>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+      >
+        <MenuItem
+          onClick={() => {
+            openEditModal(menuProperty);
+            handleCloseMenu();
+          }}
+        >
           <EditIcon fontSize="small" sx={{ mr: 1 }} /> Düzenle
         </MenuItem>
         <MenuItem onClick={() => handleDelete(menuProperty)}>
@@ -177,8 +216,11 @@ export default function PropertyPage() {
         </MenuItem>
       </Menu>
 
-      {/* Modal */}
-      <PropertyModal open={openModal} handleClose={closeModal} editData={editData} />
+      <PropertyModal
+        open={openModal}
+        handleClose={closeModal}
+        editData={editData}
+      />
     </Box>
   );
 }

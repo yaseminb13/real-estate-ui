@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Modal, Box, TextField, Button, Typography, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 import { fetchBusinesses } from "../features/businesses/businessSlice"; 
@@ -113,7 +113,6 @@ const CustomerModal = ({ open, onClose, onSave, editData }) => {
           margin="normal"
         />
 
-        {/* İş Yeri Select */}
         <FormControl fullWidth margin="normal">
           <InputLabel>Bağlı olduğu iş yeri</InputLabel>
           <Select
@@ -128,7 +127,6 @@ const CustomerModal = ({ open, onClose, onSave, editData }) => {
           </Select>
         </FormControl>
 
-        {/* İş yeri bilgileri */}
         <TextField
           label="İşyeri Yetkilisi"
           name="authorizedPerson"
