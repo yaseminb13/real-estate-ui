@@ -82,14 +82,27 @@ const CustomerModal = ({ open, onClose, onSave, editData }) => {
     }));
   };
 
-  const handleSubmit = () => {
-    if (!form.name.trim()) {
-      alert("Ad ve Soyad zorunludur!");
-      return;
-    }
-    onSave(form);
-    onClose();
+const handleSubmit = () => {
+  if (!form.name.trim()) {
+    alert("Ad ve Soyad zorunludur!");
+    return;
+  }
+
+  // Backend'in beklediği formatta gönderim
+  const payload = {
+    name: form.name,
+    email: form.email,
+    phone: form.phone,
+    address: form.address,
+    business: {
+      id: form.workplaceId,
+    },
   };
+
+  onSave(payload);
+  onClose();
+};
+
 
   return (
     <Modal open={open} onClose={onClose}>
