@@ -10,6 +10,7 @@ import {
   Paper,
   Tooltip,
   IconButton,
+  Stack,
   TextField,
   Button,
   TablePagination,
@@ -86,9 +87,16 @@ export default function CustomerPage() {
 
   return (
     <Box p={3}>
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      
+
+             <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
           <Typography variant="h5">Müşteri Listesi ({customers.length})</Typography>
+            <Stack direction="row" spacing={1}>
           <TextField
             size="small"
             placeholder="Müşteri ara..."
@@ -98,7 +106,7 @@ export default function CustomerPage() {
               setPage(0);
             }}
           />
-        </Box>
+      
         <Button
           variant="contained"
           onClick={() => {
@@ -108,8 +116,9 @@ export default function CustomerPage() {
         >
           Yeni Müşteri Ekle
         </Button>
-      </Box>
-
+        </Stack>
+          </Stack>
+           
       <Paper elevation={3}>
         <Table>
           <TableHead>
