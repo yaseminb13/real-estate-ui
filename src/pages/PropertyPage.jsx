@@ -132,9 +132,6 @@ export default function PropertyPage() {
           <TableHead>
             <TableRow>
               <TableCell>
-                <strong>ID</strong>
-              </TableCell>
-              <TableCell>
                 <strong>Başlık</strong>
               </TableCell>
               <TableCell>
@@ -160,7 +157,6 @@ export default function PropertyPage() {
           <TableBody>
             {displayedProperties.map((p) => (
               <TableRow key={p.id}>
-                <TableCell>{p.id}</TableCell>
                 <TableCell>{p.title}</TableCell>
                 <TableCell>{p.city}</TableCell>
                 <TableCell>{p.district}</TableCell>

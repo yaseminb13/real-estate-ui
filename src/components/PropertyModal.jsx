@@ -10,11 +10,9 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
-import {
-  createProperty,
-  updateProperty,
-} from "../features/properties/propertySlice";
+import { createProperty, updateProperty } from "../features/properties/propertySlice";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 export default function PropertyModal({ open, handleClose, editData }) {
   const dispatch = useDispatch();
@@ -28,6 +26,39 @@ export default function PropertyModal({ open, handleClose, editData }) {
     type: "",
     description: "",
   });
+
+  const [cities, setCities] = useState([]);
+  const [districts, setDistricts] = useState([]);
+
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const res = await axios.get("https://turkiyeapi.dev/api/v1/provinces");
+        setCities(res.data.data);
+      } catch (err) {
+        console.error("Şehirler alınamadı:", err);
+      }
+    };
+    fetchCities();
+  }, []);
+
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      if (!form.city) {
+        setDistricts([]);
+        return;
+      }
+      try {
+        const res = await axios.get(
+          `https://turkiyeapi.dev/api/v1/provinces/${form.city}`
+        );
+        setDistricts(res.data.data.districts || []);
+      } catch (err) {
+        console.error("İlçeler alınamadı:", err);
+      }
+    };
+    fetchDistricts();
+  }, [form.city]);
 
   useEffect(() => {
     if (editData) {
@@ -86,9 +117,7 @@ export default function PropertyModal({ open, handleClose, editData }) {
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
-        {editData ? "İlanı Güncelle" : "Yeni İlan Ekle"}
-      </DialogTitle>
+      <DialogTitle>{editData ? "İlanı Güncelle" : "Yeni İlan Ekle"}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
           <TextField
@@ -98,20 +127,41 @@ export default function PropertyModal({ open, handleClose, editData }) {
             onChange={handleFormChange}
             fullWidth
           />
+
           <TextField
+            select
             label="Şehir"
             name="city"
             value={form.city}
-            onChange={handleFormChange}
+            onChange={(e) => {
+              handleFormChange(e);
+              setForm((prev) => ({ ...prev, district: "" })); 
+            }}
             fullWidth
-          />
+          >
+            {cities.map((city) => (
+              <MenuItem key={city.id} value={city.id}>
+                {city.name}
+              </MenuItem>
+            ))}
+          </TextField>
+
           <TextField
+            select
             label="İlçe"
             name="district"
             value={form.district}
             onChange={handleFormChange}
             fullWidth
-          />
+            disabled={!form.city}
+          >
+            {districts.map((d) => (
+              <MenuItem key={d.id} value={d.name}>
+                {d.name}
+              </MenuItem>
+            ))}
+          </TextField>
+
           <TextField
             label="Alan (m²)"
             name="area"
