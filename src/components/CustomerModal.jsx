@@ -132,6 +132,16 @@ const CustomerModal = ({ open, onClose, onSave, editData }) => {
           }
         />
 
+
+        <TextField
+          label="Adres"
+          name="address"
+          value={form.address}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+
         <FormControl fullWidth margin="normal">
           <InputLabel>Bağlı olduğu iş yeri</InputLabel>
           <Select
