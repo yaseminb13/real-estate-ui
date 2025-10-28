@@ -1,12 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import config from "../../config/config";
 
-// TÜM MÜLKLERİ ÇEK
 export const fetchProperties = createAsyncThunk(
   "properties/fetchAll",
-  async (_, { rejectWithValue }) => {
+  async (filters = {}, { rejectWithValue }) => {
     try {
-      const res = await config.get("/properties");
+      const res = await config.get("/properties", { params: filters });
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -14,7 +13,6 @@ export const fetchProperties = createAsyncThunk(
   }
 );
 
-// MÜLK OLUŞTUR
 export const createProperty = createAsyncThunk(
   "properties/create",
   async (payload, { rejectWithValue }) => {
@@ -27,7 +25,6 @@ export const createProperty = createAsyncThunk(
   }
 );
 
-// MÜLK GÜNCELLE
 export const updateProperty = createAsyncThunk(
   "properties/update",
   async ({ id, data }, { rejectWithValue }) => {
@@ -40,7 +37,6 @@ export const updateProperty = createAsyncThunk(
   }
 );
 
-// MÜLK SİL
 export const deleteProperty = createAsyncThunk(
   "properties/delete",
   async (id, { rejectWithValue }) => {
@@ -61,6 +57,7 @@ const propertySlice = createSlice({
     error: null,
   },
   reducers: {},
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchProperties.pending, (state) => {
@@ -79,8 +76,8 @@ const propertySlice = createSlice({
         state.items.push(action.payload);
       })
       .addCase(updateProperty.fulfilled, (state, action) => {
-        const idx = state.items.findIndex((i) => i.id === action.payload.id);
-        if (idx !== -1) state.items[idx] = action.payload;
+        const index = state.items.findIndex((i) => i.id === action.payload.id);
+        if (index !== -1) state.items[index] = action.payload;
       })
       .addCase(deleteProperty.fulfilled, (state, action) => {
         state.items = state.items.filter((i) => i.id !== action.payload);

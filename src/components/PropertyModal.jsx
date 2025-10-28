@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -7,9 +7,13 @@ import {
   TextField,
   Button,
   Stack,
+  MenuItem,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { createProperty, updateProperty } from "../features/properties/propertySlice";
+import {
+  createProperty,
+  updateProperty,
+} from "../features/properties/propertySlice";
 import { toast } from "react-toastify";
 
 export default function PropertyModal({ open, handleClose, editData }) {
@@ -82,21 +86,79 @@ export default function PropertyModal({ open, handleClose, editData }) {
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{editData ? "İlanı Güncelle" : "Yeni İlan Ekle"}</DialogTitle>
+      <DialogTitle>
+        {editData ? "İlanı Güncelle" : "Yeni İlan Ekle"}
+      </DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
-          <TextField label="Başlık" name="title" value={form.title} onChange={handleFormChange} fullWidth />
-          <TextField label="Şehir" name="city" value={form.city} onChange={handleFormChange} fullWidth />
-          <TextField label="İlçe" name="district" value={form.district} onChange={handleFormChange} fullWidth />
-          <TextField label="Alan (m²)" name="area" type="number" value={form.area} onChange={handleFormChange} fullWidth />
-          <TextField label="Fiyat (₺)" name="price" type="number" value={form.price} onChange={handleFormChange} fullWidth />
-          <TextField label="Tür" name="type" value={form.type} onChange={handleFormChange} fullWidth />
-          <TextField label="Açıklama" name="description" value={form.description} onChange={handleFormChange} fullWidth multiline rows={3} />
+          <TextField
+            label="Başlık"
+            name="title"
+            value={form.title}
+            onChange={handleFormChange}
+            fullWidth
+          />
+          <TextField
+            label="Şehir"
+            name="city"
+            value={form.city}
+            onChange={handleFormChange}
+            fullWidth
+          />
+          <TextField
+            label="İlçe"
+            name="district"
+            value={form.district}
+            onChange={handleFormChange}
+            fullWidth
+          />
+          <TextField
+            label="Alan (m²)"
+            name="area"
+            type="number"
+            value={form.area}
+            onChange={handleFormChange}
+            fullWidth
+          />
+          <TextField
+            label="Fiyat (₺)"
+            name="price"
+            type="number"
+            value={form.price}
+            onChange={handleFormChange}
+            fullWidth
+          />
+
+          <TextField
+            select
+            label="Tür"
+            name="type"
+            value={form.type}
+            onChange={handleFormChange}
+            fullWidth
+          >
+            <MenuItem value="Satılık">Satılık</MenuItem>
+            <MenuItem value="Kiralık">Kiralık</MenuItem>
+          </TextField>
+
+          <TextField
+            label="Açıklama"
+            name="description"
+            value={form.description}
+            onChange={handleFormChange}
+            fullWidth
+            multiline
+            rows={3}
+          />
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="inherit">Vazgeç</Button>
-        <Button variant="contained" onClick={handleSubmit}>{editData ? "Güncelle" : "Ekle"}</Button>
+        <Button onClick={handleClose} color="inherit">
+          Vazgeç
+        </Button>
+        <Button variant="contained" onClick={handleSubmit}>
+          {editData ? "Güncelle" : "Ekle"}
+        </Button>
       </DialogActions>
     </Dialog>
   );

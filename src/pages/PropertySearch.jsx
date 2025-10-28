@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   Box,
   TextField,
@@ -11,154 +11,127 @@ import {
   TableCell,
   TableBody,
   Paper,
+  CircularProgress,
 } from "@mui/material";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProperties } from "../features/properties/propertySlice";
 
 const PropertySearch = () => {
-  // Form state
-  const [type, setType] = useState("");
-  const [city, setCity] = useState("");
-  const [district, setDistrict] = useState("");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [minArea, setMinArea] = useState("");
-  const [maxArea, setMaxArea] = useState("");
+  const dispatch = useDispatch();
+  const { items: properties, loading } = useSelector((state) => state.properties);
 
-  // Results
-  const [properties, setProperties] = useState([]);
+  const [filters, setFilters] = useState({
+    type: "",
+    city: "",
+    district: "",
+    minPrice: "",
+    maxPrice: "",
+    minArea: "",
+    maxArea: "",
+  });
+
   const [selectedProperty, setSelectedProperty] = useState(null);
 
-  // Fetch filtered properties
-  const handleSearch = async () => {
-    try {
-      const params = {
-        type,
-        city,
-        district,
-        minPrice,
-        maxPrice,
-        minArea,
-        maxArea,
-      };
-
-      // Remove empty values
-      Object.keys(params).forEach(
-        (key) => (params[key] === "" || params[key] === null) && delete params[key]
-      );
-const res = await axios.get("http://localhost:8080/properties", { params });
-      setProperties(res.data);
-    } catch (err) {
-      console.error("Arama hatası:", err);
-    }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Yazdırma fonksiyonu
+  const handleSearch = () => {
+    const cleanFilters = Object.fromEntries(
+      Object.entries(filters).filter(([_, v]) => v !== "" && v !== null)
+    );
+    dispatch(fetchProperties(cleanFilters));
+  };
+
   const handlePrint = (property) => {
     setSelectedProperty(property);
-    setTimeout(() => {
-      window.print();
-    }, 100);
+    setTimeout(() => window.print(), 200);
   };
 
+  const isEmpty = useMemo(() => !loading && properties.length === 0, [loading, properties]);
+
   return (
-    <Box p={2}>
+    <Box p={3}>
       <Typography variant="h5" mb={2}>
-        Emlak Arama
+        🏡 Emlak Arama
       </Typography>
 
-      {/* Arama Formu */}
       <Box display="flex" gap={2} flexWrap="wrap" mb={3}>
         <TextField
           select
           label="Tür"
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          style={{ minWidth: 120 }}
+          name="type"
+          value={filters.type}
+          onChange={handleChange}
+          style={{ minWidth: 150 }}
         >
           <MenuItem value="">Tümü</MenuItem>
           <MenuItem value="Satılık">Satılık</MenuItem>
           <MenuItem value="Kiralık">Kiralık</MenuItem>
         </TextField>
 
-        <TextField
-          label="Şehir"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-        />
-        <TextField
-          label="İlçe"
-          value={district}
-          onChange={(e) => setDistrict(e.target.value)}
-        />
-        <TextField
-          label="Min Fiyat"
-          type="number"
-          value={minPrice}
-          onChange={(e) => setMinPrice(e.target.value)}
-        />
-        <TextField
-          label="Max Fiyat"
-          type="number"
-          value={maxPrice}
-          onChange={(e) => setMaxPrice(e.target.value)}
-        />
-        <TextField
-          label="Min Metrekare"
-          type="number"
-          value={minArea}
-          onChange={(e) => setMinArea(e.target.value)}
-        />
-        <TextField
-          label="Max Metrekare"
-          type="number"
-          value={maxArea}
-          onChange={(e) => setMaxArea(e.target.value)}
-        />
-        <Button variant="contained" onClick={handleSearch}>
+        <TextField label="Şehir" name="city" value={filters.city} onChange={handleChange} />
+        <TextField label="İlçe" name="district" value={filters.district} onChange={handleChange} />
+        <TextField label="Min Fiyat" name="minPrice" type="number" value={filters.minPrice} onChange={handleChange} />
+        <TextField label="Max Fiyat" name="maxPrice" type="number" value={filters.maxPrice} onChange={handleChange} />
+        <TextField label="Min m²" name="minArea" type="number" value={filters.minArea} onChange={handleChange} />
+        <TextField label="Max m²" name="maxArea" type="number" value={filters.maxArea} onChange={handleChange} />
+
+        <Button variant="contained" color="primary" onClick={handleSearch}>
           Ara
         </Button>
       </Box>
 
-      {/* Sonuç Tablosu */}
-      <Paper>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Başlık</TableCell>
-              <TableCell>Tür</TableCell>
-              <TableCell>Şehir</TableCell>
-              <TableCell>İlçe</TableCell>
-              <TableCell>Fiyat</TableCell>
-              <TableCell>Metrekare</TableCell>
-              <TableCell>İşletme</TableCell>
-              <TableCell>İşlem</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {properties.map((prop) => (
-              <TableRow key={prop.id}>
-                <TableCell>{prop.title}</TableCell>
-                <TableCell>{prop.type}</TableCell>
-                <TableCell>{prop.city}</TableCell>
-                <TableCell>{prop.district}</TableCell>
-                <TableCell>{prop.price}</TableCell>
-                <TableCell>{prop.area}</TableCell>
-                <TableCell>{prop.business?.name}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="outlined"
-                    onClick={() => handlePrint(prop)}
-                  >
-                    Yazdır
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Paper>
+      {loading && (
+        <Box display="flex" justifyContent="center" mt={5}>
+          <CircularProgress />
+        </Box>
+      )}
 
-      {/* Yazdırılacak detay */}
+      {isEmpty && (
+        <Typography color="text.secondary" mt={2}>
+          Kriterlere uygun emlak bulunamadı.
+        </Typography>
+      )}
+
+      {!loading && properties.length > 0 && (
+        <Paper>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell><strong>Başlık</strong></TableCell>
+                <TableCell><strong>Tür</strong></TableCell>
+                <TableCell><strong>Şehir</strong></TableCell>
+                <TableCell><strong>İlçe</strong></TableCell>
+                <TableCell><strong>Fiyat</strong></TableCell>
+                <TableCell><strong>Metrekare</strong></TableCell>
+                <TableCell><strong>İşyeri</strong></TableCell>
+                <TableCell><strong>İşlem</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {properties.map((prop) => (
+                <TableRow key={prop.id} hover>
+                  <TableCell>{prop.title}</TableCell>
+                  <TableCell>{prop.type}</TableCell>
+                  <TableCell>{prop.city}</TableCell>
+                  <TableCell>{prop.district}</TableCell>
+                  <TableCell>{prop.price}</TableCell>
+                  <TableCell>{prop.area}</TableCell>
+                  <TableCell>{prop.business?.name}</TableCell>
+                  <TableCell>
+                    <Button variant="outlined" size="small" onClick={() => handlePrint(prop)}>
+                      Yazdır
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Paper>
+      )}
+
       {selectedProperty && (
         <Box display="none">
           <Typography variant="h6">Emlak Detayları</Typography>
@@ -176,4 +149,3 @@ const res = await axios.get("http://localhost:8080/properties", { params });
 };
 
 export default PropertySearch;
-
