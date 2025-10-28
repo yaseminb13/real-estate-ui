@@ -1,7 +1,17 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Modal, Box, TextField, Button, Typography, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
-import { fetchBusinesses } from "../features/businesses/businessSlice"; 
+import {
+  Modal,
+  Box,
+  TextField,
+  Button,
+  Typography,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
+import { fetchBusinesses } from "../features/businesses/businessSlice";
 
 const modalStyle = {
   position: "absolute",
@@ -17,7 +27,9 @@ const modalStyle = {
 
 const CustomerModal = ({ open, onClose, onSave, editData }) => {
   const dispatch = useDispatch();
-  const { items: businesses, loading } = useSelector((state) => state.businesses);
+  const { items: businesses, loading } = useSelector(
+    (state) => state.businesses
+  );
 
   const [form, setForm] = useState({
     name: "",
@@ -27,7 +39,7 @@ const CustomerModal = ({ open, onClose, onSave, editData }) => {
     authorizedPerson: "",
     workplaceAddress: "",
     workplacePhone: "",
-    workplaceFax: ""
+    workplaceFax: "",
   });
 
   useEffect(() => {
@@ -46,7 +58,7 @@ const CustomerModal = ({ open, onClose, onSave, editData }) => {
         authorizedPerson: "",
         workplaceAddress: "",
         workplacePhone: "",
-        workplaceFax: ""
+        workplaceFax: "",
       });
     }
   }, [editData]);
@@ -58,15 +70,15 @@ const CustomerModal = ({ open, onClose, onSave, editData }) => {
 
   const handleWorkplaceChange = (e) => {
     const selectedId = e.target.value;
-    const selectedWorkplace = businesses.find(wp => wp.id === selectedId);
+    const selectedWorkplace = businesses.find((wp) => wp.id === selectedId);
 
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       workplaceId: selectedId,
       authorizedPerson: selectedWorkplace?.authorizedPerson || "",
       workplaceAddress: selectedWorkplace?.address || "",
       workplacePhone: selectedWorkplace?.phone || "",
-      workplaceFax: selectedWorkplace?.fax || ""
+      workplaceFax: selectedWorkplace?.fax || "",
     }));
   };
 
@@ -107,10 +119,17 @@ const CustomerModal = ({ open, onClose, onSave, editData }) => {
         <TextField
           label="E-posta"
           name="email"
+          type="email"
           value={form.email}
           onChange={handleChange}
           fullWidth
           margin="normal"
+          error={form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)}
+          helperText={
+            form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)
+              ? "Geçerli bir e-posta adresi giriniz"
+              : ""
+          }
         />
 
         <FormControl fullWidth margin="normal">
@@ -121,8 +140,10 @@ const CustomerModal = ({ open, onClose, onSave, editData }) => {
             onChange={handleWorkplaceChange}
             disabled={loading}
           >
-            {businesses.map(wp => (
-              <MenuItem key={wp.id} value={wp.id}>{wp.name}</MenuItem>
+            {businesses.map((wp) => (
+              <MenuItem key={wp.id} value={wp.id}>
+                {wp.name}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
