@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
   Typography,
@@ -11,15 +12,18 @@ import {
   Button,
   TextField,
   IconButton,
-  Menu,
-  MenuItem,
   Stack,
   TablePagination,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+
 import {
   fetchProperties,
   deleteProperty,
@@ -35,8 +39,9 @@ export default function PropertyPage() {
   const [search, setSearch] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [editData, setEditData] = useState(null);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [menuProperty, setMenuProperty] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -49,15 +54,9 @@ export default function PropertyPage() {
     const q = search.toLowerCase();
     return properties.filter(
       (p) =>
-        String(p.title || "")
-          .toLowerCase()
-          .includes(q) ||
-        String(p.city || "")
-          .toLowerCase()
-          .includes(q) ||
-        String(p.district || "")
-          .toLowerCase()
-          .includes(q)
+        String(p.title || "").toLowerCase().includes(q) ||
+        String(p.city || "").toLowerCase().includes(q) ||
+        String(p.district || "").toLowerCase().includes(q)
     );
   }, [properties, search]);
 
@@ -82,19 +81,23 @@ export default function PropertyPage() {
     setEditData(null);
   };
 
-  const handleDelete = async (prop) => {
-    await dispatch(deleteProperty(prop.id));
-    handleCloseMenu();
+  const handleDeleteConfirmed = async () => {
+    if (selectedProperty) {
+      await dispatch(deleteProperty(selectedProperty.id));
+      toast.success("İlan başarıyla silindi!");
+      setConfirmOpen(false);
+      setSelectedProperty(null);
+    }
   };
 
-  const handleOpenMenu = (event, prop) => {
-    setAnchorEl(event.currentTarget);
-    setMenuProperty(prop);
+  const handleDeleteClick = (prop) => {
+    setSelectedProperty(prop);
+    setConfirmOpen(true);
   };
 
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-    setMenuProperty(null);
+  const handleCancelDelete = () => {
+    setConfirmOpen(false);
+    setSelectedProperty(null);
   };
 
   const handleChangePage = (event, newPage) => setPage(newPage);
@@ -149,7 +152,7 @@ export default function PropertyPage() {
               <TableCell>
                 <strong>Tür</strong>
               </TableCell>
-              <TableCell align="right">
+              <TableCell align="center">
                 <strong>İşlemler</strong>
               </TableCell>
             </TableRow>
@@ -163,16 +166,23 @@ export default function PropertyPage() {
                 <TableCell>{p.area}</TableCell>
                 <TableCell>{p.price}</TableCell>
                 <TableCell>{p.type}</TableCell>
-                <TableCell align="right">
-                  <IconButton
-                    size="small"
-                    onClick={(e) => handleOpenMenu(e, p)}
-                  >
-                    <MoreVertIcon />
-                  </IconButton>
+
+                {/* 🔹 İşlemler hücresi */}
+                <TableCell align="center">
+                  <Tooltip title="Düzenle">
+                    <IconButton color="primary" onClick={() => openEditModal(p)}>
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Sil">
+                    <IconButton color="error" onClick={() => handleDeleteClick(p)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}
+
             {displayedProperties.length === 0 && (
               <TableRow>
                 <TableCell colSpan={8} align="center">
@@ -194,29 +204,28 @@ export default function PropertyPage() {
         />
       </Paper>
 
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleCloseMenu}
-      >
-        <MenuItem
-          onClick={() => {
-            openEditModal(menuProperty);
-            handleCloseMenu();
-          }}
-        >
-          <EditIcon fontSize="small" sx={{ mr: 1 }} /> Düzenle
-        </MenuItem>
-        <MenuItem onClick={() => handleDelete(menuProperty)}>
-          <DeleteIcon fontSize="small" sx={{ mr: 1 }} /> Sil
-        </MenuItem>
-      </Menu>
-
       <PropertyModal
         open={openModal}
         handleClose={closeModal}
         editData={editData}
       />
+
+      <Dialog open={confirmOpen} onClose={handleCancelDelete}>
+        <DialogTitle>Silme Onayı</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Bu ilanı silmek istediğinize emin misiniz?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete} color="inherit">
+            Vazgeç
+          </Button>
+          <Button onClick={handleDeleteConfirmed} color="error" variant="contained">
+            Evet, Sil
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
