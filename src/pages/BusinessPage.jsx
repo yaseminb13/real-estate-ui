@@ -13,6 +13,7 @@ import {
   CircularProgress,
   Paper,
   IconButton,
+  Stack,
   Tooltip,
   Dialog,
   DialogTitle,
@@ -105,8 +106,14 @@ const BusinessPage = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+                  <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
         <Typography variant="h5">İşyeri Listesi ({rows.length})</Typography>
+          <Stack direction="row" spacing={1}>
         <TextField
           label="İşyeri Ara"
           value={filter}
@@ -116,7 +123,9 @@ const BusinessPage = () => {
         <Button variant="contained" onClick={() => setOpen(true)}>
           Yeni İşyeri Ekle
         </Button>
-      </Box>
+        </Stack>
+        </Stack>
+    
 
       <Paper elevation={3}>
         <Table>

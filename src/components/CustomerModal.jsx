@@ -88,7 +88,6 @@ const handleSubmit = () => {
     return;
   }
 
-  // Backend'in beklediği formatta gönderim
   const payload = {
     name: form.name,
     email: form.email,
