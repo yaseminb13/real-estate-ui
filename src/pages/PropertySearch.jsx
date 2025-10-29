@@ -45,8 +45,21 @@ const PropertySearch = () => {
   };
 
   const handlePrint = (property) => {
-    setSelectedProperty(property);
-    setTimeout(() => window.print(), 200);
+    const printWindow = window.open("", "_blank");
+    printWindow.document.write("<html><head><title>İlan Detayı</title></head><body>");
+    printWindow.document.write(`<h2>${property.title}</h2>`);
+    printWindow.document.write(`<p>Tür: ${property.type}</p>`);
+    printWindow.document.write(`<p>Şehir: ${property.city}</p>`);
+    printWindow.document.write(`<p>İlçe: ${property.district}</p>`);
+    printWindow.document.write(`<p>Alan: ${property.area} m²</p>`);
+    printWindow.document.write(`<p>Isıtma Türü: ${property.heatingType}</p>`);
+    printWindow.document.write(`<p>Oda Sayısı: ${property.roomCount}</p>`);
+    printWindow.document.write(`<p>Kat Sayısı: ${property.floorCount}</p>`);
+    printWindow.document.write(`<p>Bulunduğu Kat: ${property.currentFloor}</p>`);
+    printWindow.document.write(`<p>Fiyat: ${property.price} ₺</p>`);
+    printWindow.document.write("</body></html>");
+    printWindow.document.close();
+    printWindow.print();
   };
 
   const isEmpty = useMemo(() => !loading && properties.length === 0, [loading, properties]);
