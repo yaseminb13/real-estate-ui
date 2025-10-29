@@ -27,10 +27,6 @@ export default function PropertyModal({ open, handleClose, editData }) {
     (state) => state.businesses
   );
 
-  useEffect(() => {
-    dispatch(fetchBusinesses());
-  }, [dispatch]);
-
   const [form, setForm] = useState({
     title: "",
     city: "",
@@ -44,10 +40,10 @@ export default function PropertyModal({ open, handleClose, editData }) {
     workplaceAddress: "",
     workplacePhone: "",
     workplaceFax: "",
-    heatingType: "", 
+    heatingType: "",
     roomCount: "",
-    floorCount: "", 
-    currentFloor: "", 
+    floorCount: "",
+    currentFloor: "",
   });
 
   const [cities, setCities] = useState([]);
@@ -84,6 +80,10 @@ export default function PropertyModal({ open, handleClose, editData }) {
   }, [form.city]);
 
   useEffect(() => {
+    dispatch(fetchBusinesses());
+  }, [dispatch]);
+
+  useEffect(() => {
     if (editData) {
       setForm({
         title: editData.title || "",
@@ -97,6 +97,11 @@ export default function PropertyModal({ open, handleClose, editData }) {
         roomCount: editData.roomCount || "",
         floorCount: editData.floorCount || "",
         currentFloor: editData.currentFloor || "",
+        workplaceId: editData.workplaceId || "",
+        authorizedPerson: editData.authorizedPerson || "",
+        workplaceAddress: editData.workplaceAddress || "",
+        workplacePhone: editData.workplacePhone || "",
+        workplaceFax: editData.workplaceFax || "",
       });
     } else {
       setForm({
@@ -111,6 +116,11 @@ export default function PropertyModal({ open, handleClose, editData }) {
         roomCount: "",
         floorCount: "",
         currentFloor: "",
+        workplaceId: "",
+        authorizedPerson: "",
+        workplaceAddress: "",
+        workplacePhone: "",
+        workplaceFax: "",
       });
     }
   }, [editData]);
@@ -140,13 +150,30 @@ export default function PropertyModal({ open, handleClose, editData }) {
       return;
     }
 
+    const selectedBusiness = businesses.find((b) => b.id === form.workplaceId);
+
     const payload = {
-      ...form,
-      area: form.area ? parseFloat(form.area) : null,
+      title: form.title,
+      type: form.type,
+      city: form.city,
+      district: form.district,
       price: form.price ? parseFloat(form.price) : null,
+      area: form.area ? parseFloat(form.area) : null,
+      heatingType: form.heatingType || null,
       roomCount: form.roomCount ? parseInt(form.roomCount) : null,
       floorCount: form.floorCount ? parseInt(form.floorCount) : null,
       currentFloor: form.currentFloor ? parseInt(form.currentFloor) : null,
+      description: form.description || "",
+      business: selectedBusiness
+        ? {
+            id: selectedBusiness.id,
+            name: selectedBusiness.name,
+            authorizedPerson: selectedBusiness.authorizedPerson,
+            address: selectedBusiness.address,
+            phone: selectedBusiness.phone,
+            fax: selectedBusiness.fax,
+          }
+        : null,
     };
 
     try {
@@ -220,6 +247,7 @@ export default function PropertyModal({ open, handleClose, editData }) {
             onChange={handleFormChange}
             fullWidth
           />
+
           <TextField
             label="Fiyat (₺)"
             name="price"
@@ -312,6 +340,7 @@ export default function PropertyModal({ open, handleClose, editData }) {
           />
         </Stack>
       </DialogContent>
+
       <DialogActions>
         <Button onClick={handleClose} color="inherit">
           Vazgeç
