@@ -1,52 +1,58 @@
-"use client";
-
-import React from "react";
 import Chart from "react-apexcharts";
-import { Typography, Box } from "@mui/material";
+import { Card } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProperties } from "../../features/properties/propertySlice";
 
 export default function GraphTwo() {
-  const options = {
-    chart: {
-      type: "donut",
-    },
-    labels: ["Satışlar", "Kazançlar", "Zararlar", "Harcamalar"],
-    legend: {
-      position: "bottom",
-    },
-    dataLabels: {
-      enabled: true,
-    },
-    colors: ["#008FFB", "#00E396", "#FEB019", "#FF4560"], // güzel renkler
-    responsive: [
-      {
-        breakpoint: 480,
-        options: {
-          chart: {
-            width: 300,
-          },
-          legend: {
-            position: "bottom",
-          },
-        },
-      },
-    ],
-  };
+  const dispatch = useDispatch();
+  const { items: properties, loading } = useSelector((state) => state.properties);
 
-  const series = [44, 55, 13, 43]; // her biri bir dilimi temsil ediyor
+  const [chartData, setChartData] = useState({
+    series: [0, 0],
+    options: {
+      chart: {
+        type: "donut",
+      },
+      labels: ["Satılık", "Kiralık"],
+      legend: {
+        position: "bottom",
+      },
+      colors: ["#008FFB", "#FEB019"],
+      dataLabels: {
+        enabled: true,
+      },
+      title: {
+        text: "Emlak Türü Dağılımı",
+        align: "center",
+      },
+    },
+  });
+
+  useEffect(() => {
+    dispatch(fetchProperties());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (properties && properties.length > 0) {
+      const satilikCount = properties.filter((p) => p.type === "Satılık").length;
+      const kiralikCount = properties.filter((p) => p.type === "Kiralık").length;
+
+      setChartData((prev) => ({
+        ...prev,
+        series: [satilikCount, kiralikCount],
+      }));
+    }
+  }, [properties]);
 
   return (
-    <Box p={3} display="flex" flexDirection="column" alignItems="center">
-      <Typography variant="h5" mb={2}>
-        İşletme Performansı
-      </Typography>
-
+    <Card sx={{ p: 2 }}>
       <Chart
-        options={options}
-        series={series}
+        options={chartData.options}
+        series={chartData.series}
         type="donut"
-        width="380"
-        height={270}
+        height={335}
       />
-    </Box>
+    </Card>
   );
 }

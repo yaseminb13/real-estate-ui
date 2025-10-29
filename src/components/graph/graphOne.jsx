@@ -1,64 +1,88 @@
 import Chart from "react-apexcharts";
-import { Card, Grid } from "@mui/material";
-
+import { Card } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProperties } from "../../features/properties/propertySlice";
 
 export default function GraphOne() {
+  const dispatch = useDispatch();
+  const { items: properties, loading } = useSelector((state) => state.properties);
 
-
-      const options = {
-    chart: {
-      id: "area-chart",
-      type: "area",
-      height: 350,
-      toolbar: {
-        show: false,
+  const [chartData, setChartData] = useState({
+    series: [
+      {
+        name: "İlan Sayısı",
+        data: [],
       },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    stroke: {
-      curve: "smooth",
-    },
-    xaxis: {
-      type: "datetime",
-      categories: [
-        "2018-09-19T00:00:00.000Z",
-        "2018-09-19T01:30:00.000Z",
-        "2018-09-19T02:30:00.000Z",
-        "2018-09-19T03:30:00.000Z",
-        "2018-09-19T04:30:00.000Z",
-        "2018-09-19T05:30:00.000Z",
-        "2018-09-19T06:30:00.000Z",
-      ],
-    },
-    tooltip: {
-      x: {
-        format: "dd/MM/yy HH:mm",
+    ],
+    options: {
+      chart: {
+        type: "bar",
+        height: 350,
+        toolbar: { show: false },
       },
+      plotOptions: {
+        bar: {
+          borderRadius: 6,
+          columnWidth: "50%",
+        },
+      },
+      dataLabels: {
+        enabled: true,
+      },
+      xaxis: {
+        categories: [],
+        title: {
+          text: "Şehirler",
+        },
+      },
+      yaxis: {
+        title: {
+          text: "İlan Sayısı",
+        },
+      },
+      title: {
+        text: "Şehirlere Göre Emlak Dağılımı",
+        align: "center",
+      },
+      colors: ["#00E396"],
     },
-  };
+  });
 
-    const series = [
-    {
-      name: "series1",
-      data: [31, 40, 28, 51, 42, 109, 100],
-    },
-    {
-      name: "series2",
-      data: [11, 32, 45, 32, 34, 52, 41],
-    },
-  ];
+  useEffect(() => {
+    dispatch(fetchProperties());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (properties && properties.length > 0) {
+      const cityCounts = properties.reduce((acc, property) => {
+        const city = property.city || "Bilinmiyor";
+        acc[city] = (acc[city] || 0) + 1;
+        return acc;
+      }, {});
+
+      const cities = Object.keys(cityCounts);
+      const counts = Object.values(cityCounts);
+
+      setChartData((prev) => ({
+        ...prev,
+        series: [{ name: "İlan Sayısı", data: counts }],
+        options: {
+          ...prev.options,
+          xaxis: { ...prev.options.xaxis, categories: cities },
+        },
+      }));
+    }
+  }, [properties]);
 
   return (
-    <>
+    <Card sx={{ p: 2 }}>
       <Chart
-                  options={options}
-                  series={series}
-                  type="area"
-                  height={350}
-                  width="100%"
-                />
-    </>
+        options={chartData.options}
+        series={chartData.series}
+        type="bar"
+        height={320}
+      />
+    </Card>
   );
-}   
+}
