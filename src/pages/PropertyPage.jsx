@@ -54,9 +54,15 @@ export default function PropertyPage() {
     const q = search.toLowerCase();
     return properties.filter(
       (p) =>
-        String(p.title || "").toLowerCase().includes(q) ||
-        String(p.city || "").toLowerCase().includes(q) ||
-        String(p.district || "").toLowerCase().includes(q)
+        String(p.title || "")
+          .toLowerCase()
+          .includes(q) ||
+        String(p.city || "")
+          .toLowerCase()
+          .includes(q) ||
+        String(p.district || "")
+          .toLowerCase()
+          .includes(q)
     );
   }, [properties, search]);
 
@@ -150,8 +156,21 @@ export default function PropertyPage() {
                 <strong>Fiyat (₺)</strong>
               </TableCell>
               <TableCell>
+                <strong>Isınma Türü</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Oda Sayısı</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Kat Sayısı</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Bulunduğu Kat</strong>
+              </TableCell>
+              <TableCell>
                 <strong>Tür</strong>
               </TableCell>
+
               <TableCell align="center">
                 <strong>İşlemler</strong>
               </TableCell>
@@ -165,17 +184,26 @@ export default function PropertyPage() {
                 <TableCell>{p.district}</TableCell>
                 <TableCell>{p.area}</TableCell>
                 <TableCell>{p.price}</TableCell>
+                <TableCell>{p.heatingType || "-"}</TableCell>
+                <TableCell>{p.roomCount ?? "-"}</TableCell>
+                <TableCell>{p.floorCount ?? "-"}</TableCell>
+                <TableCell>{p.currentFloor ?? "-"}</TableCell>
                 <TableCell>{p.type}</TableCell>
 
-                {/* 🔹 İşlemler hücresi */}
                 <TableCell align="center">
                   <Tooltip title="Düzenle">
-                    <IconButton color="primary" onClick={() => openEditModal(p)}>
+                    <IconButton
+                      color="primary"
+                      onClick={() => openEditModal(p)}
+                    >
                       <EditIcon />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Sil">
-                    <IconButton color="error" onClick={() => handleDeleteClick(p)}>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDeleteClick(p)}
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </Tooltip>
@@ -213,15 +241,17 @@ export default function PropertyPage() {
       <Dialog open={confirmOpen} onClose={handleCancelDelete}>
         <DialogTitle>Silme Onayı</DialogTitle>
         <DialogContent>
-          <Typography>
-            Bu ilanı silmek istediğinize emin misiniz?
-          </Typography>
+          <Typography>Bu ilanı silmek istediğinize emin misiniz?</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelDelete} color="inherit">
             Vazgeç
           </Button>
-          <Button onClick={handleDeleteConfirmed} color="error" variant="contained">
+          <Button
+            onClick={handleDeleteConfirmed}
+            color="error"
+            variant="contained"
+          >
             Evet, Sil
           </Button>
         </DialogActions>

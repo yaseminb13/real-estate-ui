@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Dialog,
   DialogTitle,
@@ -8,14 +9,27 @@ import {
   Button,
   Stack,
   MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
 } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { createProperty, updateProperty } from "../features/properties/propertySlice";
+import {
+  createProperty,
+  updateProperty,
+} from "../features/properties/propertySlice";
+import { fetchBusinesses } from "../features/businesses/businessSlice";
 import { toast } from "react-toastify";
 import axios from "axios";
 
 export default function PropertyModal({ open, handleClose, editData }) {
   const dispatch = useDispatch();
+  const { items: businesses, loading } = useSelector(
+    (state) => state.businesses
+  );
+
+  useEffect(() => {
+    dispatch(fetchBusinesses());
+  }, [dispatch]);
 
   const [form, setForm] = useState({
     title: "",
@@ -25,6 +39,15 @@ export default function PropertyModal({ open, handleClose, editData }) {
     price: "",
     type: "",
     description: "",
+    workplaceId: "",
+    authorizedPerson: "",
+    workplaceAddress: "",
+    workplacePhone: "",
+    workplaceFax: "",
+    heatingType: "", 
+    roomCount: "",
+    floorCount: "", 
+    currentFloor: "", 
   });
 
   const [cities, setCities] = useState([]);
@@ -70,6 +93,10 @@ export default function PropertyModal({ open, handleClose, editData }) {
         price: editData.price || "",
         type: editData.type || "",
         description: editData.description || "",
+        heatingType: editData.heatingType || "",
+        roomCount: editData.roomCount || "",
+        floorCount: editData.floorCount || "",
+        currentFloor: editData.currentFloor || "",
       });
     } else {
       setForm({
@@ -80,6 +107,10 @@ export default function PropertyModal({ open, handleClose, editData }) {
         price: "",
         type: "",
         description: "",
+        heatingType: "",
+        roomCount: "",
+        floorCount: "",
+        currentFloor: "",
       });
     }
   }, [editData]);
@@ -87,6 +118,20 @@ export default function PropertyModal({ open, handleClose, editData }) {
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleWorkplaceChange = (e) => {
+    const selectedId = e.target.value;
+    const selectedWorkplace = businesses.find((wp) => wp.id === selectedId);
+
+    setForm((prev) => ({
+      ...prev,
+      workplaceId: selectedId,
+      authorizedPerson: selectedWorkplace?.authorizedPerson || "",
+      workplaceAddress: selectedWorkplace?.address || "",
+      workplacePhone: selectedWorkplace?.phone || "",
+      workplaceFax: selectedWorkplace?.fax || "",
+    }));
   };
 
   const handleSubmit = async () => {
@@ -99,6 +144,9 @@ export default function PropertyModal({ open, handleClose, editData }) {
       ...form,
       area: form.area ? parseFloat(form.area) : null,
       price: form.price ? parseFloat(form.price) : null,
+      roomCount: form.roomCount ? parseInt(form.roomCount) : null,
+      floorCount: form.floorCount ? parseInt(form.floorCount) : null,
+      currentFloor: form.currentFloor ? parseInt(form.currentFloor) : null,
     };
 
     try {
@@ -117,7 +165,9 @@ export default function PropertyModal({ open, handleClose, editData }) {
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{editData ? "İlanı Güncelle" : "Yeni İlan Ekle"}</DialogTitle>
+      <DialogTitle>
+        {editData ? "İlanı Güncelle" : "Yeni İlan Ekle"}
+      </DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
           <TextField
@@ -135,7 +185,7 @@ export default function PropertyModal({ open, handleClose, editData }) {
             value={form.city}
             onChange={(e) => {
               handleFormChange(e);
-              setForm((prev) => ({ ...prev, district: "" })); 
+              setForm((prev) => ({ ...prev, district: "" }));
             }}
             fullWidth
           >
@@ -190,6 +240,66 @@ export default function PropertyModal({ open, handleClose, editData }) {
             <MenuItem value="Satılık">Satılık</MenuItem>
             <MenuItem value="Kiralık">Kiralık</MenuItem>
           </TextField>
+
+          <TextField
+            label="Isınma Türü"
+            name="heatingType"
+            value={form.heatingType}
+            onChange={handleFormChange}
+            fullWidth
+          />
+
+          <TextField
+            label="Oda Sayısı"
+            name="roomCount"
+            type="number"
+            value={form.roomCount}
+            onChange={handleFormChange}
+            fullWidth
+          />
+
+          <TextField
+            label="Kat Sayısı"
+            name="floorCount"
+            type="number"
+            value={form.floorCount}
+            onChange={handleFormChange}
+            fullWidth
+          />
+
+          <TextField
+            label="Bulunduğu Kat"
+            name="currentFloor"
+            type="number"
+            value={form.currentFloor}
+            onChange={handleFormChange}
+            fullWidth
+          />
+
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Bağlı olduğu iş yeri</InputLabel>
+            <Select
+              value={form.workplaceId}
+              name="workplaceId"
+              onChange={handleWorkplaceChange}
+              disabled={loading}
+            >
+              {businesses.map((wp) => (
+                <MenuItem key={wp.id} value={wp.id}>
+                  {wp.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <TextField
+            label="İşyeri Yetkilisi"
+            name="authorizedPerson"
+            value={form.authorizedPerson}
+            fullWidth
+            margin="normal"
+            disabled
+          />
 
           <TextField
             label="Açıklama"
