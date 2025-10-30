@@ -30,6 +30,7 @@ export default function PropertyModal({ open, handleClose, editData }) {
   const [form, setForm] = useState({
     title: "",
     city: "",
+    cityId: "",
     district: "",
     area: "",
     price: "",
@@ -63,13 +64,13 @@ export default function PropertyModal({ open, handleClose, editData }) {
 
   useEffect(() => {
     const fetchDistricts = async () => {
-      if (!form.city) {
+      if (!form.cityId) {
         setDistricts([]);
         return;
       }
       try {
         const res = await axios.get(
-          `https://turkiyeapi.dev/api/v1/provinces/${form.city}`
+          `https://turkiyeapi.dev/api/v1/provinces/${form.cityId}`
         );
         setDistricts(res.data.data.districts || []);
       } catch (err) {
@@ -77,17 +78,23 @@ export default function PropertyModal({ open, handleClose, editData }) {
       }
     };
     fetchDistricts();
-  }, [form.city]);
+  }, [form.cityId]);
 
   useEffect(() => {
     dispatch(fetchBusinesses());
   }, [dispatch]);
 
   useEffect(() => {
-    if (editData) {
+    if (editData && cities.length > 0) {
+      const foundCity = cities.find(
+        (c) => c.name.toLowerCase() === editData.city?.toLowerCase()
+      );
+      const cityId = foundCity?.id || "";
+
       setForm({
         title: editData.title || "",
         city: editData.city || "",
+        cityId,
         district: editData.district || "",
         area: editData.area || "",
         price: editData.price || "",
@@ -97,16 +104,17 @@ export default function PropertyModal({ open, handleClose, editData }) {
         roomCount: editData.roomCount || "",
         floorCount: editData.floorCount || "",
         currentFloor: editData.currentFloor || "",
-        workplaceId: editData.workplaceId || "",
-        authorizedPerson: editData.authorizedPerson || "",
-        workplaceAddress: editData.workplaceAddress || "",
-        workplacePhone: editData.workplacePhone || "",
-        workplaceFax: editData.workplaceFax || "",
+        workplaceId: editData.business?.id || "",
+        authorizedPerson: editData.business?.authorizedPerson || "",
+        workplaceAddress: editData.business?.address || "",
+        workplacePhone: editData.business?.phone || "",
+        workplaceFax: editData.business?.fax || "",
       });
-    } else {
+    } else if (!editData) {
       setForm({
         title: "",
         city: "",
+        cityId: "",
         district: "",
         area: "",
         price: "",
@@ -123,7 +131,7 @@ export default function PropertyModal({ open, handleClose, editData }) {
         workplaceFax: "",
       });
     }
-  }, [editData]);
+  }, [editData, cities]);
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
@@ -192,9 +200,7 @@ export default function PropertyModal({ open, handleClose, editData }) {
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
-        {editData ? "İlanı Güncelle" : "Yeni İlan Ekle"}
-      </DialogTitle>
+      <DialogTitle>{editData ? "İlanı Güncelle" : "Yeni İlan Ekle"}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
           <TextField
@@ -209,15 +215,23 @@ export default function PropertyModal({ open, handleClose, editData }) {
             select
             label="Şehir"
             name="city"
-            value={form.city}
+            value={form.city ? JSON.stringify({ name: form.city, id: form.cityId }) : ""}
             onChange={(e) => {
-              handleFormChange(e);
-              setForm((prev) => ({ ...prev, district: "" }));
+              const selectedCity = JSON.parse(e.target.value);
+              setForm((prev) => ({
+                ...prev,
+                city: selectedCity.name,
+                cityId: selectedCity.id,
+                district: "",
+              }));
             }}
             fullWidth
           >
             {cities.map((city) => (
-              <MenuItem key={city.id} value={city.id}>
+              <MenuItem
+                key={city.id}
+                value={JSON.stringify({ name: city.name, id: city.id })}
+              >
                 {city.name}
               </MenuItem>
             ))}
@@ -230,7 +244,7 @@ export default function PropertyModal({ open, handleClose, editData }) {
             value={form.district}
             onChange={handleFormChange}
             fullWidth
-            disabled={!form.city}
+            disabled={!form.cityId}
           >
             {districts.map((d) => (
               <MenuItem key={d.id} value={d.name}>
@@ -325,7 +339,6 @@ export default function PropertyModal({ open, handleClose, editData }) {
             name="authorizedPerson"
             value={form.authorizedPerson}
             fullWidth
-            margin="normal"
             disabled
           />
 
