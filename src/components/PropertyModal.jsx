@@ -35,7 +35,6 @@ export default function PropertyModal({ open, handleClose, editData }) {
     area: "",
     price: "",
     type: "",
-    description: "",
     workplaceId: "",
     authorizedPerson: "",
     workplaceAddress: "",
@@ -99,7 +98,6 @@ export default function PropertyModal({ open, handleClose, editData }) {
         area: editData.area || "",
         price: editData.price || "",
         type: editData.type || "",
-        description: editData.description || "",
         heatingType: editData.heatingType || "",
         roomCount: editData.roomCount || "",
         floorCount: editData.floorCount || "",
@@ -119,7 +117,6 @@ export default function PropertyModal({ open, handleClose, editData }) {
         area: "",
         price: "",
         type: "",
-        description: "",
         heatingType: "",
         roomCount: "",
         floorCount: "",
@@ -171,7 +168,6 @@ export default function PropertyModal({ open, handleClose, editData }) {
       roomCount: form.roomCount ? parseInt(form.roomCount) : null,
       floorCount: form.floorCount ? parseInt(form.floorCount) : null,
       currentFloor: form.currentFloor ? parseInt(form.currentFloor) : null,
-      description: form.description || "",
       business: selectedBusiness
         ? {
             id: selectedBusiness.id,
@@ -342,15 +338,6 @@ export default function PropertyModal({ open, handleClose, editData }) {
             disabled
           />
 
-          <TextField
-            label="Açıklama"
-            name="description"
-            value={form.description}
-            onChange={handleFormChange}
-            fullWidth
-            multiline
-            rows={3}
-          />
         </Stack>
       </DialogContent>
 
