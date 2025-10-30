@@ -32,19 +32,18 @@ const DashboardLayout = () => {
 
   return (
     <Box sx={{ display: "flex" }}>
-      {/* Üst Menü */}
+    
       <AppBar
         position="fixed"
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, bgcolor: "#1976d2" }}
       >
         <Toolbar>
           <Typography variant="h6" noWrap component="div">
-            Emlak Yönetim Sistemi
+           🏡 Emlak Yönetim Sistemi
           </Typography>
         </Toolbar>
       </AppBar>
 
-      {/* Sol Menü (Drawer) */}
       <Drawer
         variant="permanent"
         sx={{
@@ -68,7 +67,6 @@ const DashboardLayout = () => {
         </List>
       </Drawer>
 
-      {/* İçerik Alanı */}
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
         <Outlet />

@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import config from "../../config/config";
 
-// TÜM MÜŞTERİLERİ ÇEK
 export const fetchCustomers = createAsyncThunk(
   "customers/fetchAll",
   async (_, { rejectWithValue }) => {
@@ -14,7 +13,6 @@ export const fetchCustomers = createAsyncThunk(
   }
 );
 
-// YENİ MÜŞTERİ OLUŞTUR
 export const createCustomer = createAsyncThunk(
   "customers/create",
   async (data, { rejectWithValue }) => {
@@ -27,7 +25,6 @@ export const createCustomer = createAsyncThunk(
   }
 );
 
-// MÜŞTERİ GÜNCELLE
 export const updateCustomer = createAsyncThunk(
   "customers/update",
   async ({ id, data }, { rejectWithValue }) => {
@@ -40,7 +37,6 @@ export const updateCustomer = createAsyncThunk(
   }
 );
 
-// MÜŞTERİ SİL
 export const deleteCustomer = createAsyncThunk(
   "customers/delete",
   async (id, { rejectWithValue }) => {
@@ -63,7 +59,7 @@ const customerSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // FETCH
+   
       .addCase(fetchCustomers.pending, (state) => {
         state.loading = true;
       })
@@ -75,16 +71,13 @@ const customerSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // CREATE
       .addCase(createCustomer.fulfilled, (state, action) => {
         state.items.push(action.payload);
       })
-      // UPDATE
       .addCase(updateCustomer.fulfilled, (state, action) => {
         const idx = state.items.findIndex(c => c.id === action.payload.id);
         if (idx !== -1) state.items[idx] = action.payload;
       })
-      // DELETE
       .addCase(deleteCustomer.fulfilled, (state, action) => {
         state.items = state.items.filter(c => c.id !== action.payload);
       });

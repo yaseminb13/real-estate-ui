@@ -49,7 +49,7 @@ const BusinessModal = ({ open, onClose, onSave, editData }) => {
 
     const formattedForm = {
       ...form,
-      phone: form.phone.replace(/\D/g, ""), // +90 (555) 123 45 67 => 905551234567
+      phone: form.phone.replace(/\D/g, ""), 
       fax: form.fax.replace(/\D/g, ""),
     };
 
@@ -89,7 +89,6 @@ const BusinessModal = ({ open, onClose, onSave, editData }) => {
           margin="normal"
         />
 
-        {/* Telefon ve Fax maskeli input */}
         <TextField
           label="Telefon"
           name="phone"
