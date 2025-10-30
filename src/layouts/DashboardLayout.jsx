@@ -1,5 +1,5 @@
 import React from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Drawer,
@@ -11,16 +11,17 @@ import {
   ListItemText,
   ListItemIcon,
 } from "@mui/material";
-import HomeIcon from '@mui/icons-material/Home';
-import GroupsIcon from '@mui/icons-material/Groups';
-import RealEstateAgentIcon from '@mui/icons-material/RealEstateAgent';
-import WorkIcon from '@mui/icons-material/Work';
-import SearchIcon from '@mui/icons-material/Search';
+import HomeIcon from "@mui/icons-material/Home";
+import GroupsIcon from "@mui/icons-material/Groups";
+import RealEstateAgentIcon from "@mui/icons-material/RealEstateAgent";
+import WorkIcon from "@mui/icons-material/Work";
+import SearchIcon from "@mui/icons-material/Search";
 
 const drawerWidth = 240;
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
+  const location = useLocation(); 
 
   const menuItems = [
     { text: "Dashboard", path: "/", icon: <HomeIcon /> },
@@ -32,14 +33,13 @@ const DashboardLayout = () => {
 
   return (
     <Box sx={{ display: "flex" }}>
-    
       <AppBar
         position="fixed"
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, bgcolor: "#1976d2" }}
       >
         <Toolbar>
           <Typography variant="h6" noWrap component="div">
-           🏡 Emlak Yönetim Sistemi
+            🏡 Emlak Yönetim Sistemi
           </Typography>
         </Toolbar>
       </AppBar>
@@ -58,12 +58,31 @@ const DashboardLayout = () => {
       >
         <Toolbar />
         <List>
-          {menuItems.map((item) => (
-            <ListItem button key={item.text} onClick={() => navigate(item.path)}>
-                <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItem>
-          ))}
+          {menuItems.map((item) => {
+            const isActive = location.pathname === item.path; 
+
+            return (
+              <ListItem
+                button
+                key={item.text}
+                onClick={() => navigate(item.path)}
+                sx={{
+                  backgroundColor: isActive ? "#1976d2" : "transparent",
+                  color: isActive ? "#fff" : "inherit",
+                  "&:hover": {
+                    backgroundColor: isActive ? "#1565c0" : "#e0e0e0",
+                  },
+                }}
+              >
+                <ListItemIcon
+                  sx={{ color: isActive ? "#fff" : "inherit", minWidth: 40 }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItem>
+            );
+          })}
         </List>
       </Drawer>
 
